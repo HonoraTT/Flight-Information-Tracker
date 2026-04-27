@@ -13,6 +13,12 @@ opensky:
   client-secret: your_client_secret
   auth-url: https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token
   api-url: https://opensky-network.org/api
+  filter-on-ground: true
+  retry-max-attempts: 3
+  retry-interval-seconds: 3
+  token-refresh-advance-seconds: 300
+  rate-limit-pause-seconds: 300
+  polling-interval-seconds: 60
   bbox:
     lamin: 18.0
     lamax: 55.0
