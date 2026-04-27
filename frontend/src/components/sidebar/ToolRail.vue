@@ -1,13 +1,14 @@
 <template>
-  <nav class="rail">
+  <nav class="floating-tool-rail" aria-label="地图功能选择">
     <button
       v-for="tool in tools"
       :key="tool.id"
+      type="button"
       :class="{ active: activeTool === tool.id }"
       @click="$emit('change', tool.id)"
     >
       <em>{{ tool.icon }}</em>
-      {{ tool.name }}
+      <span>{{ tool.name }}</span>
     </button>
   </nav>
 </template>

@@ -1,12 +1,33 @@
 <template>
   <main class="dashboard">
     <section class="map-area">
-      <DashboardTopbar v-model="query" />
-      <MapPlaceholder :flights="filteredFlights" :selected-flight="selectedFlight" @select-flight="selectedFlight = $event" />
+      <DashboardTopbar
+        v-model="query"
+        @login-click="showLoginHint = !showLoginHint"
+        @more-click="showMoreMenu = !showMoreMenu"
+      />
+
+      <MapPlaceholder
+        :flights="filteredFlights"
+        :selected-flight="selectedFlight"
+        @select-flight="selectedFlight = $event"
+      />
+
+      <ToolRail :tools="tools" :active-tool="activeTool" @change="activeTool = $event" />
+
+      <div v-if="showLoginHint" class="top-popover login-popover glass">
+        <strong>登录入口占位</strong>
+        <span>后续可接入账号体系、偏好同步与收藏航班。</span>
+      </div>
+
+      <div v-if="showMoreMenu" class="top-popover more-popover glass">
+        <button type="button">帮助中心</button>
+        <button type="button">快捷键说明</button>
+        <button type="button">关于项目</button>
+      </div>
     </section>
 
     <aside class="side-panel">
-      <ToolRail :tools="tools" :active-tool="activeTool" @change="activeTool = $event" />
       <SidebarPanelLayout :config="currentPanelConfig">
         <component :is="currentPanelComponent" />
       </SidebarPanelLayout>
@@ -27,24 +48,26 @@ import WeatherPanel from '../components/sidebar/WeatherPanel.vue'
 
 const activeTool = ref('weather')
 const query = ref('')
+const showLoginHint = ref(false)
+const showMoreMenu = ref(false)
 
 const tools = [
-  { id: 'settings', name: 'Settings', icon: '⚙' },
   { id: 'weather', name: 'Weather', icon: '☁' },
+  { id: 'settings', name: 'Settings', icon: '⚙' },
   { id: 'filters', name: 'Filters', icon: '⏷' },
   { id: 'playback', name: 'Playback', icon: '↺' },
 ]
 
 const panelConfig = {
-  settings: {
-    kicker: 'Control center',
-    title: 'Settings',
-    desc: '全局地图视图、数据展示规则、单位与偏好的总控制台。',
-  },
   weather: {
     kicker: 'Aviation weather',
     title: 'Weather',
     desc: '航空气象数据与图层叠加入口，对应 METAR、机场气象、跑道运行条件。',
+  },
+  settings: {
+    kicker: 'Control center',
+    title: 'Settings',
+    desc: '全局地图视图、数据展示规则、单位与偏好的总控制台。',
   },
   filters: {
     kicker: 'Flight discovery',
@@ -59,8 +82,8 @@ const panelConfig = {
 }
 
 const panelComponents = {
-  settings: SettingsPanel,
   weather: WeatherPanel,
+  settings: SettingsPanel,
   filters: FiltersPanel,
   playback: PlaybackPanel,
 }
