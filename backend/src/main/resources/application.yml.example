@@ -1,8 +1,20 @@
+server:
+  port: 8080
+
 spring:
-  application:
-    name=Flight-Information-Tracker
   datasource:
     url: jdbc:mysql://localhost:3306/flight_tracker?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: 你的密码
+    password: your_mysql_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+opensky:
+  client-id: your_client_id
+  client-secret: your_client_secret
+  auth-url: https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token
+  api-url: https://opensky-network.org/api
+  bbox:
+    lamin: 18.0
+    lamax: 55.0
+    lomin: 70.0
+    lomax: 140.0
