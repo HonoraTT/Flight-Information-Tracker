@@ -59,7 +59,7 @@ select {
 
 .topbar {
   position: absolute;
-  z-index: 5;
+  z-index: 8;
   top: 22px;
   left: 26px;
   right: 26px;
@@ -68,11 +68,19 @@ select {
   gap: 16px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .brand,
 .search,
+.icon-btn,
 .glass,
 .card,
-.weather-hero {
+.weather-hero,
+.floating-tool-rail {
   border: 1px solid rgba(122, 161, 195, 0.26);
   background: rgba(255, 255, 255, 0.84);
   box-shadow: 0 18px 50px rgba(76, 116, 150, 0.14);
@@ -108,6 +116,135 @@ select {
   outline: 0;
   background: transparent;
   color: #17324d;
+}
+
+.icon-btn {
+  border: 0;
+  border-radius: 999px;
+  color: #24425d;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 45px rgba(60, 106, 145, 0.2);
+}
+
+.login-btn {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  font-weight: 850;
+}
+
+.icon-circle {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef6fd;
+  color: #176cc0;
+}
+
+.more-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.top-popover {
+  position: absolute;
+  z-index: 9;
+  top: 78px;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.login-popover {
+  right: 92px;
+  width: 250px;
+  display: grid;
+  gap: 6px;
+}
+
+.login-popover span {
+  color: #6c8298;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.more-popover {
+  right: 26px;
+  width: 154px;
+  display: grid;
+  gap: 6px;
+}
+
+.more-popover button {
+  border: 0;
+  border-radius: 12px;
+  padding: 9px 10px;
+  background: transparent;
+  color: #34526e;
+  text-align: left;
+  cursor: pointer;
+}
+
+.more-popover button:hover {
+  background: #eef6fd;
+}
+
+.floating-tool-rail {
+  position: absolute;
+  z-index: 7;
+  top: 168px;
+  right: 18px;
+  width: 82px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 10px;
+  border-radius: 24px;
+}
+
+.floating-tool-rail button {
+  min-height: 66px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: #667f95;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.floating-tool-rail button:hover,
+.floating-tool-rail button.active {
+  background: rgba(255, 255, 255, 0.96);
+  color: #176cc0;
+  box-shadow: 0 10px 24px rgba(67, 126, 176, 0.16);
+}
+
+.floating-tool-rail em {
+  display: block;
+  font-size: 30px;
+  font-style: normal;
+}
+
+.floating-tool-rail span {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
 }
 
 .land {
@@ -233,10 +370,15 @@ select {
 
 .flight-card small,
 .desc,
-.hint,
-.weather-hero p,
-.weather-hero span {
+.hint {
   color: #6c8298;
+  line-height: 1.55;
+}
+
+/* 这里后面应该改成自动读取天气背景颜色然后动态变化颜色 */
+.weather-hero span,
+.weather-hero p {
+  color: #d7ebff;
   line-height: 1.55;
 }
 
@@ -266,7 +408,9 @@ select {
 .flight-card dt,
 .weather-grid span,
 .mini-list span,
-.card > span {
+.card > span,
+.track-head span,
+.saved-layout span {
   color: #7a8fa3;
   font-size: 12px;
 }
@@ -289,13 +433,33 @@ select {
 }
 
 .controls button {
-  width: 38px;
-  height: 38px;
-  border: 0;
-  border-radius: 13px;
-  background: #fff;
-  color: #24425d;
-  box-shadow: 0 10px 22px rgba(76, 116, 150, 0.16);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(122, 161, 195, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #355777;
+  box-shadow: 0 12px 28px rgba(76, 116, 150, 0.18);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.controls button:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  box-shadow: 0 16px 32px rgba(76, 116, 150, 0.22);
+}
+
+.controls svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .legend {
@@ -323,8 +487,6 @@ select {
 .orange-dot { background: #f2a321; }
 
 .side-panel {
-  display: grid;
-  grid-template-columns: 86px minmax(0, 1fr);
   height: 100vh;
   background: rgba(255, 255, 255, 0.74);
   border-left: 1px solid rgba(122, 161, 195, 0.22);
@@ -332,40 +494,9 @@ select {
   backdrop-filter: blur(22px);
 }
 
-.rail {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  padding: 26px 12px;
-  border-right: 1px solid rgba(122, 161, 195, 0.18);
-}
-
-.rail button {
-  width: 62px;
-  min-height: 72px;
-  border: 0;
-  border-radius: 22px;
-  background: transparent;
-  color: #6c8298;
-  cursor: pointer;
-}
-
-.rail button.active,
-.rail button:hover {
-  background: #fff;
-  color: #176cc0;
-  box-shadow: 0 14px 32px rgba(67, 126, 176, 0.16);
-}
-
-.rail em {
-  display: block;
-  font-size: 22px;
-  font-style: normal;
-}
-
 .panel {
   overflow: auto;
+  height: 100%;
   padding: 32px clamp(20px, 2.4vw, 34px);
 }
 
@@ -420,6 +551,12 @@ select {
   accent-color: #176cc0;
 }
 
+.toggle input[type="checkbox"] {
+  width: 17px;   
+  height: 17px;  
+  cursor: pointer;
+}
+
 .setting-row,
 .filter-summary,
 .track-head,
@@ -432,6 +569,10 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.setting-row{
+  margin-bottom: 4px;
 }
 
 .track-stats,
@@ -456,47 +597,43 @@ select {
   line-height: 1.6;
 }
 
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.form label {
+  display: grid;
+  gap: 8px;
+  color: #567087;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .two-col {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.playback-buttons {
-  margin-top: 12px;
+.form select,
+.form input,
+.date {
+  width: 100%;
+  border: 1px solid #dce8f2;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #17324d;
+  padding: 11px 12px;
 }
 
-.track-head span,
-.saved-layout span {
-  color: #7a8fa3;
-  font-size: 12px;
-}
-
-.runway-row {
-  margin-top: 12px;
-}
-
-.runway-row i {
-  display: block;
-  flex: 1;
-  height: 9px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #39a7ea, #8fd95c);
-}
-
-.toggle + .toggle,
-.mini-list p + p {
-  border-top: 1px solid #e9f0f6;
-}
-
-.toggle input {
-  width: 42px;
-  height: 24px;
-  accent-color: #176cc0;
+.form select{
+  margin-bottom: 10px;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
+  margin-bottom: 10px;
 }
 
 .chips button {
@@ -505,13 +642,18 @@ select {
   padding: 9px 12px;
   background: #eef5fb;
   color: #49657d;
-  font-weight: 800;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
 }
 
 .chips .picked {
   background: #176cc0;
   color: #fff;
+}
+
+.playback-buttons {
+  margin-top: 12px;
 }
 
 .mini-list {
@@ -543,30 +685,6 @@ select {
   font-size: 34px;
 }
 
-.form {
-  display: grid;
-  gap: 14px;
-}
-
-.form label {
-  display: grid;
-  gap: 8px;
-  color: #567087;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.form select,
-.form input,
-.date {
-  width: 100%;
-  border: 1px solid #dce8f2;
-  border-radius: 14px;
-  background: #f8fbff;
-  color: #17324d;
-  padding: 11px 12px;
-}
-
 .progress {
   height: 9px;
   overflow: hidden;
@@ -579,6 +697,18 @@ select {
   width: 74%;
   height: 100%;
   background: linear-gradient(90deg, #24b66d, #8fd95c);
+}
+
+.runway-row {
+  margin-top: 12px;
+}
+
+.runway-row i {
+  display: block;
+  flex: 1;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #39a7ea, #8fd95c);
 }
 
 .mini-route {
@@ -608,26 +738,13 @@ select {
 
   .side-panel {
     height: auto;
-    grid-template-columns: 1fr;
     border-left: 0;
     border-top: 1px solid rgba(122, 161, 195, 0.22);
   }
 
-  .rail {
-    flex-direction: row;
-    justify-content: center;
-    padding: 14px;
-  }
-
-  .rail button {
-    width: auto;
-    min-height: 50px;
-    padding: 8px 14px;
-  }
-
-  .rail em {
-    display: inline;
-    margin-right: 6px;
+  .floating-tool-rail {
+    top: 120px;
+    right: 16px;
   }
 }
 
@@ -641,8 +758,34 @@ select {
     padding: 16px;
   }
 
+  .topbar-actions {
+    flex-wrap: wrap;
+  }
+
   .search,
   .flight-card {
+    width: auto;
+  }
+
+  .floating-tool-rail {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: calc(100% - 32px);
+    margin: 0 16px 16px;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .floating-tool-rail button {
+    flex: 1;
+    min-height: 54px;
+  }
+
+  .login-popover,
+  .more-popover {
+    right: 16px;
+    left: 16px;
     width: auto;
   }
 
@@ -656,5 +799,9 @@ select {
 
   .legend {
     display: none;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
   }
 }
