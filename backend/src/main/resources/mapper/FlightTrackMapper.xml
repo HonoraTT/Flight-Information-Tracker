@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.flightinformationtracker.mapper.FlightTrackMapper">
+
+    <!-- 实体字段映射 -->
+    <resultMap id="FlightTrackResultMap" type="com.example.flightinformationtracker.entity.FlightTrack">
+        <id property="id" column="id"/>
+        <result property="icao24" column="icao24"/>
+        <result property="callsign" column="callsign"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="baroAltitude" column="baro_altitude"/>
+        <result property="velocity" column="velocity"/>
+        <result property="heading" column="heading"/>
+        <result property="onGround" column="on_ground"/>
+        <result property="originCountry" column="origin_country"/>
+        <result property="recordTime" column="record_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, icao24, callsign, longitude, latitude,
+        baro_altitude, velocity, heading, on_ground, origin_country, record_time
+    </sql>
+
+    <!-- int insert(FlightTrack flightTrack) -->
+    <insert id="insert" parameterType="com.example.flightinformationtracker.entity.FlightTrack"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO flight_track (
+        icao24, callsign, longitude, latitude,
+        baro_altitude, velocity, heading, on_ground, origin_country, record_time
+        ) VALUES (
+        #{icao24}, #{callsign}, #{longitude}, #{latitude},
+        #{baroAltitude}, #{velocity}, #{heading}, #{onGround}, #{originCountry}, #{recordTime}
+        )
+    </insert>
+
+    <!-- FlightTrack selectById(Long id) -->
+    <select id="selectById" parameterType="long" resultMap="FlightTrackResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM flight_track
+        WHERE id = #{id}
+    </select>
+
+    <!-- List<FlightTrack> selectAll() -->
+    <select id="selectAll" resultMap="FlightTrackResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM flight_track
+        ORDER BY id DESC
+    </select>
+
+    <!-- List<FlightTrack> selectByIcao24AndTimeRange(...) -->
+    <select id="selectByIcao24AndTimeRange" resultMap="FlightTrackResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM flight_track
+        WHERE icao24 = #{icao24}
+        AND record_time BETWEEN #{start} AND #{end}
+        ORDER BY record_time ASC
+    </select>
+
+    <!-- List<FlightTrack> selectTimelineCount(start, end)
+         复用 FlightTrack 返回：callsign=时间桶字符串，velocity=该桶数量 -->
+    <!-- 时间段统计查询 - 修复 ONLY_FULL_GROUP_BY 问题 -->
+    <select id="selectTimelineCount" resultMap="FlightTrackResultMap">
+        SELECT
+        MIN(id) AS id,
+        NULL AS icao24,
+        MIN(DATE_FORMAT(
+        FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(record_time) / 600) * 600),
+        '%Y-%m-%d %H:%i:00'
+        )) AS callsign,
+        NULL AS longitude,
+        NULL AS latitude,
+        NULL AS baro_altitude,
+        COUNT(*) AS velocity,
+        NULL AS heading,
+        NULL AS on_ground,
+        NULL AS origin_country,
+        MIN(FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(record_time) / 600) * 600)) AS record_time
+        FROM flight_track
+        WHERE record_time BETWEEN #{start} AND #{end}
+        GROUP BY FLOOR(UNIX_TIMESTAMP(record_time) / 600)
+        ORDER BY FLOOR(UNIX_TIMESTAMP(record_time) / 600)
+    </select>
+
+    <!-- int deleteBefore(LocalDateTime threshold) -->
+    <delete id="deleteBefore" parameterType="java.time.LocalDateTime">
+        DELETE FROM flight_track
+        WHERE record_time &lt; #{threshold}
+    </delete>
+
+    <!-- List<FlightTrack> findByCallsign(String callsign) -->
+    <select id="findByCallsign" parameterType="string" resultMap="FlightTrackResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM flight_track
+        WHERE callsign = #{callsign}
+        ORDER BY record_time DESC
+    </select>
+
+    <!-- List<FlightTrack> findByIcao24(String icao24) -->
+    <select id="findByIcao24" parameterType="string" resultMap="FlightTrackResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM flight_track
+        WHERE icao24 = #{icao24}
+        ORDER BY record_time DESC
+    </select>
+
+</mapper>
