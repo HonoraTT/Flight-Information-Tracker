@@ -6,14 +6,14 @@ import { useUiStore } from '../stores/uiStore'
 let stompClient = null
 
 export function connectWebSocket() {
-  const socket = new SockJS('/ws')
+  const socket = new SockJS('/ws-flights')
   stompClient = Stomp.over(socket)
 
   stompClient.connect({}, () => {
     stompClient.subscribe('/topic/flights', (message) => {
-      const flight = JSON.parse(message.body)
+      const flightList = JSON.parse(message.body)
       const flightStore = useFlightStore()
-      flightStore.updateFlight(flight)
+      flightStore.updateFlightList(Array.isArray(flightList) ? flightList : [])
     })
 
     stompClient.subscribe('/topic/flights/removed', (message) => {

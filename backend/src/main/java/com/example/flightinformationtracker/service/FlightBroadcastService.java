@@ -18,14 +18,11 @@ public class FlightBroadcastService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final OpenSkyService openSkyService;
-    private final TrackStorageService trackStorageService;
 
     public FlightBroadcastService(SimpMessagingTemplate messagingTemplate,
-                                  OpenSkyService openSkyService,
-                                  TrackStorageService trackStorageService) {
+                                  OpenSkyService openSkyService) {
         this.messagingTemplate = messagingTemplate;
         this.openSkyService = openSkyService;
-        this.trackStorageService = trackStorageService;
     }
 
     @Scheduled(fixedDelayString = "#{@openSkyService.getPollingIntervalMillis()}")
@@ -33,7 +30,6 @@ public class FlightBroadcastService {
         try {
             List<FlightState> flights = openSkyService.fetchCurrentFlights();
             messagingTemplate.convertAndSend("/topic/flights", flights);
-            trackStorageService.batchSaveAsync(flights);
             log.info("广播 {} 架飞机数据", flights.size());
         } catch (Exception e) {
             log.error("广播失败：{}", e.getMessage(), e);

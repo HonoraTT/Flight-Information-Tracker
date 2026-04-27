@@ -10,6 +10,14 @@ export const useFlightStore = defineStore('flight', () => {
     flights.value[flight.icao24] = flight
   }
 
+  function updateFlightList(flightList) {
+    const newMap = {}
+    for (const flight of flightList) {
+      if (flight.icao24) newMap[flight.icao24] = flight
+    }
+    flights.value = newMap
+  }
+
   function removeFlight(icao24) {
     delete flights.value[icao24]
   }
@@ -18,5 +26,5 @@ export const useFlightStore = defineStore('flight', () => {
     flights.value = {}
   }
 
-  return { flights, loading, error, updateFlight, removeFlight, clearFlights }
+  return { flights, loading, error, updateFlight, updateFlightList, removeFlight, clearFlights }
 })

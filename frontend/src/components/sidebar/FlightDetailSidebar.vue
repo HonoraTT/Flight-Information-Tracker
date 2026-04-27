@@ -5,14 +5,14 @@
       <div v-if="flight" class="detail-content">
         <h2>{{ flight.callsign || flight.icao24 }}</h2>
         <dl>
-          <dt>ICAO24</dt><dd>{{ flight.icao24 }}</dd>
-          <dt>Callsign</dt><dd>{{ flight.callsign || '-' }}</dd>
-          <dt>Origin</dt><dd>{{ flight.origin_country }}</dd>
-          <dt>Latitude</dt><dd>{{ flight.latitude?.toFixed(4) }}</dd>
-          <dt>Longitude</dt><dd>{{ flight.longitude?.toFixed(4) }}</dd>
-          <dt>Altitude</dt><dd>{{ flight.baro_altitude?.toFixed(0) }} m</dd>
-          <dt>Velocity</dt><dd>{{ flight.velocity?.toFixed(1) }} m/s</dd>
-          <dt>Heading</dt><dd>{{ flight.true_track?.toFixed(1) }}°</dd>
+          <dt>ICAO24 标识</dt><dd>{{ flight.icao24 }}</dd>
+          <dt>航班呼号</dt><dd>{{ flight.callsign || '-' }}</dd>
+          <dt>注册国家</dt><dd>{{ flight.originCountry }}</dd>
+          <dt>纬度</dt><dd>{{ flight.latitude?.toFixed(4) ?? '-' }}</dd>
+          <dt>经度</dt><dd>{{ flight.longitude?.toFixed(4) ?? '-' }}</dd>
+          <dt>气压高度</dt><dd>{{ flight.baroAltitude?.toFixed(0) ?? '-' }} m</dd>
+          <dt>地速</dt><dd>{{ flight.velocity?.toFixed(1) ?? '-' }} m/s</dd>
+          <dt>航向角</dt><dd>{{ flight.heading?.toFixed(1) ?? '-' }}°</dd>
         </dl>
       </div>
     </aside>
@@ -35,31 +35,35 @@ const flight = computed(() =>
 <style scoped>
 .flight-detail-sidebar {
   position: fixed;
-  right: 0;
+  left: 0;
   top: 0;
   width: 300px;
   height: 100vh;
   background: #1a1a2e;
   color: #e0e0e0;
   padding: 20px;
-  box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+  box-shadow: 2px 0 10px rgba(0,0,0,0.3);
   z-index: 1000;
   overflow-y: auto;
 }
 .close-btn {
   position: absolute;
   top: 10px;
-  right: 14px;
+  left: 14px;
   background: none;
   border: none;
   color: #aaa;
   font-size: 18px;
   cursor: pointer;
 }
+
+.detail-content {
+  padding-top: 50px;
+}
 dl { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
 dt { color: #888; font-size: 12px; }
 dd { margin: 0; font-size: 13px; }
 
-.slide-enter-active, .slide-leave-active { transition: right 0.3s ease; }
-.slide-enter-from, .slide-leave-to { right: -300px; }
+.slide-enter-active, .slide-leave-active { transition: left 0.3s ease; }
+.slide-enter-from, .slide-leave-to { left: -300px; }
 </style>
