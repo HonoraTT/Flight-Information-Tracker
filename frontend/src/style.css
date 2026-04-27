@@ -4,12 +4,657 @@
   box-sizing: border-box;
 }
 
+:root {
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  color: #17324d;
+  background: #f3f9ff;
+}
+
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #0f0f1a;
-  color: #e0e0e0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 24% 18%, rgba(111, 197, 255, 0.22), transparent 28%),
+    linear-gradient(135deg, #eff8ff 0%, #f7fbff 44%, #eaf4ff 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
 }
 
 #app {
   min-height: 100vh;
+}
+
+.dashboard {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(340px, 1fr);
+}
+
+.map-area {
+  position: relative;
+  overflow: hidden;
+}
+
+.map-canvas {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(69, 132, 186, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 132, 186, 0.08) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
+.map-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 25% 62%, rgba(73, 171, 156, 0.22), transparent 20%),
+    radial-gradient(circle at 72% 38%, rgba(62, 141, 215, 0.22), transparent 18%);
+}
+
+.topbar {
+  position: absolute;
+  z-index: 5;
+  top: 22px;
+  left: 26px;
+  right: 26px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand,
+.search,
+.glass,
+.card,
+.weather-hero {
+  border: 1px solid rgba(122, 161, 195, 0.26);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 18px 50px rgba(76, 116, 150, 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-weight: 850;
+}
+
+.brand img {
+  width: 32px;
+  height: 32px;
+}
+
+.search {
+  width: min(360px, 42vw);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+
+.search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #17324d;
+}
+
+.land {
+  position: absolute;
+  border: 2px solid rgba(70, 143, 183, 0.18);
+  border-radius: 54% 46% 58% 42%;
+  transform: rotate(-14deg);
+}
+
+.land-a {
+  left: 10%;
+  top: 28%;
+  width: 38vw;
+  height: 28vh;
+  background: rgba(123, 209, 180, 0.12);
+}
+
+.land-b {
+  right: 13%;
+  bottom: 13%;
+  width: 35vw;
+  height: 26vh;
+  background: rgba(88, 155, 216, 0.11);
+}
+
+.route {
+  position: absolute;
+  height: 2px;
+  border-top: 2px dashed rgba(35, 112, 175, 0.35);
+  transform-origin: left center;
+}
+
+.r1 { width: 42%; left: 27%; top: 45%; transform: rotate(-12deg); }
+.r2 { width: 31%; left: 46%; top: 38%; transform: rotate(31deg); }
+.r3 { width: 35%; left: 38%; top: 67%; transform: rotate(-30deg); }
+
+.marker {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #17324d;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.marker i {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  color: #176cc0;
+  box-shadow: 0 10px 24px rgba(39, 101, 151, 0.22);
+  font-style: normal;
+}
+
+.marker.active i {
+  background: #176cc0;
+  color: #fff;
+}
+
+.marker span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.flight-card {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: min(330px, 36vw);
+  padding: 22px;
+  border-radius: 28px;
+  transform: translate(-50%, -35%);
+}
+
+.eyebrow,
+.kicker {
+  margin-bottom: 8px;
+  color: #176cc0;
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.title-row,
+.od,
+.card-head,
+.toggle,
+.mini-list p,
+.weather-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title-row h1,
+.panel h2 {
+  margin: 0;
+  font-size: clamp(30px, 3vw, 40px);
+}
+
+.title-row b {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.blue { background: #e6f6ff; color: #0873b9; }
+.green { background: #ecfdf3; color: #16844a; }
+.orange { background: #fff3df; color: #b56a00; }
+
+.flight-card small,
+.desc,
+.hint,
+.weather-hero p,
+.weather-hero span {
+  color: #6c8298;
+  line-height: 1.55;
+}
+
+.od {
+  margin: 18px 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #f1f7fd;
+  font-weight: 850;
+}
+
+.flight-card dl,
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.flight-card dl div,
+.weather-grid p {
+  margin: 0;
+  padding: 12px;
+  border-radius: 18px;
+  background: #f7fbff;
+}
+
+.flight-card dt,
+.weather-grid span,
+.mini-list span,
+.card > span {
+  color: #7a8fa3;
+  font-size: 12px;
+}
+
+.flight-card dd,
+.weather-grid b,
+.mini-list b {
+  display: block;
+  margin-top: 4px;
+  font-weight: 850;
+}
+
+.controls {
+  position: absolute;
+  z-index: 5;
+  left: 26px;
+  bottom: 28px;
+  display: flex;
+  gap: 10px;
+}
+
+.controls button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 13px;
+  background: #fff;
+  color: #24425d;
+  box-shadow: 0 10px 22px rgba(76, 116, 150, 0.16);
+}
+
+.legend {
+  position: absolute;
+  right: 26px;
+  bottom: 28px;
+  z-index: 5;
+  display: flex;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+
+.blue-dot { background: #1593db; }
+.green-dot { background: #24b66d; }
+.orange-dot { background: #f2a321; }
+
+.side-panel {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.74);
+  border-left: 1px solid rgba(122, 161, 195, 0.22);
+  box-shadow: -28px 0 70px rgba(82, 122, 154, 0.12);
+  backdrop-filter: blur(22px);
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  padding: 26px 12px;
+  border-right: 1px solid rgba(122, 161, 195, 0.18);
+}
+
+.rail button {
+  width: 62px;
+  min-height: 72px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: #6c8298;
+  cursor: pointer;
+}
+
+.rail button.active,
+.rail button:hover {
+  background: #fff;
+  color: #176cc0;
+  box-shadow: 0 14px 32px rgba(67, 126, 176, 0.16);
+}
+
+.rail em {
+  display: block;
+  font-size: 22px;
+  font-style: normal;
+}
+
+.panel {
+  overflow: auto;
+  padding: 32px clamp(20px, 2.4vw, 34px);
+}
+
+.desc {
+  margin: 0 0 24px;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.card,
+.weather-hero {
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.card-head {
+  margin-bottom: 14px;
+}
+
+.card-head em {
+  color: #7a8fa3;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.toggle {
+  padding: 12px 0;
+  color: #456179;
+}
+
+.toggle span {
+  display: grid;
+  gap: 4px;
+}
+
+.toggle small {
+  color: #7a8fa3;
+  font-size: 12px;
+}
+
+.toggle + .toggle,
+.mini-list p + p {
+  border-top: 1px solid #e9f0f6;
+}
+
+.toggle input {
+  width: 42px;
+  height: 24px;
+  accent-color: #176cc0;
+}
+
+.setting-row,
+.filter-summary,
+.track-head,
+.timeline-card,
+.track-stats p,
+.weather-list p,
+.runway-row,
+.saved-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.track-stats,
+.weather-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.metar-card {
+  display: grid;
+  gap: 10px;
+}
+
+.metar-card code,
+.review-note {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f5f9fd;
+  color: #34526e;
+  line-height: 1.6;
+}
+
+.two-col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.playback-buttons {
+  margin-top: 12px;
+}
+
+.track-head span,
+.saved-layout span {
+  color: #7a8fa3;
+  font-size: 12px;
+}
+
+.runway-row {
+  margin-top: 12px;
+}
+
+.runway-row i {
+  display: block;
+  flex: 1;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #39a7ea, #8fd95c);
+}
+
+.toggle + .toggle,
+.mini-list p + p {
+  border-top: 1px solid #e9f0f6;
+}
+
+.toggle input {
+  width: 42px;
+  height: 24px;
+  accent-color: #176cc0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.chips button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: #eef5fb;
+  color: #49657d;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chips .picked {
+  background: #176cc0;
+  color: #fff;
+}
+
+.mini-list {
+  display: grid;
+  gap: 10px;
+}
+
+.mini-list p {
+  margin: 0;
+  padding-top: 10px;
+}
+
+.mini-list p:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.weather-hero {
+  background: linear-gradient(135deg, #176cc0, #36a8e6);
+  color: #fff;
+}
+
+.weather-hero h3 {
+  margin: 6px 0;
+  font-size: 22px;
+}
+
+.weather-hero strong {
+  font-size: 34px;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.form label {
+  display: grid;
+  gap: 8px;
+  color: #567087;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form select,
+.form input,
+.date {
+  width: 100%;
+  border: 1px solid #dce8f2;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #17324d;
+  padding: 11px 12px;
+}
+
+.progress {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eff6;
+}
+
+.progress i {
+  display: block;
+  width: 74%;
+  height: 100%;
+  background: linear-gradient(90deg, #24b66d, #8fd95c);
+}
+
+.mini-route {
+  display: flex;
+  justify-content: space-between;
+  margin: 22px 4px;
+  border-top: 2px dashed #a8c9e3;
+}
+
+.mini-route i {
+  width: 12px;
+  height: 12px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #176cc0;
+  box-shadow: 0 0 0 6px #e8f3fc;
+}
+
+@media (max-width: 1080px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .map-canvas {
+    height: 62vh;
+  }
+
+  .side-panel {
+    height: auto;
+    grid-template-columns: 1fr;
+    border-left: 0;
+    border-top: 1px solid rgba(122, 161, 195, 0.22);
+  }
+
+  .rail {
+    flex-direction: row;
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .rail button {
+    width: auto;
+    min-height: 50px;
+    padding: 8px 14px;
+  }
+
+  .rail em {
+    display: inline;
+    margin-right: 6px;
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .search,
+  .flight-card {
+    width: auto;
+  }
+
+  .flight-card {
+    left: 16px;
+    right: 16px;
+    top: auto;
+    bottom: 86px;
+    transform: none;
+  }
+
+  .legend {
+    display: none;
+  }
 }
