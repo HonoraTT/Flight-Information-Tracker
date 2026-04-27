@@ -1,25 +1,42 @@
 <template>
   <main class="dashboard">
     <section class="map-area">
-      <DashboardTopbar
-        v-model="query"
-        @login-click="showLoginHint = !showLoginHint"
-        @more-click="showMoreMenu = !showMoreMenu"
-      />
+      <FlightMap ref="flightMapRef" />
 
-      <FlightMap />
+      <div class="map-overlay-layer">
+        <DashboardTopbar
+          v-model="query"
+          @login-click="showLoginHint = !showLoginHint"
+          @more-click="showMoreMenu = !showMoreMenu"
+        />
 
-      <ToolRail :tools="tools" :active-tool="activeTool" @change="activeTool = $event" />
+        <ToolRail :tools="tools" :active-tool="activeTool" @change="activeTool = $event" />
 
-      <div v-if="showLoginHint" class="top-popover login-popover glass">
-        <strong>登录入口占位</strong>
-        <span>后续可接入账号体系、偏好同步与收藏航班。</span>
-      </div>
+        <div class="controls" aria-label="地图控制">
+          <button type="button" aria-label="放大地图" @click="flightMapRef?.zoomIn()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+          <button type="button" aria-label="缩小地图" @click="flightMapRef?.zoomOut()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+          </button>
+          <button type="button" aria-label="还原视图" @click="flightMapRef?.resetView()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4" /></svg>
+          </button>
+          <button type="button" aria-label="定位到默认视角" @click="flightMapRef?.locateDefaultView()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
+          </button>
+        </div>
 
-      <div v-if="showMoreMenu" class="top-popover more-popover glass">
-        <button type="button">帮助中心</button>
-        <button type="button">快捷键说明</button>
-        <button type="button">关于项目</button>
+        <div v-if="showLoginHint" class="top-popover login-popover glass">
+          <strong>登录入口占位</strong>
+          <span>后续可接入账号体系、偏好同步与收藏航班。</span>
+        </div>
+
+        <div v-if="showMoreMenu" class="top-popover more-popover glass">
+          <button type="button">帮助中心</button>
+          <button type="button">快捷键说明</button>
+          <button type="button">关于项目</button>
+        </div>
       </div>
     </section>
 
@@ -45,9 +62,8 @@ import SidebarPanelLayout from '../components/sidebar/SidebarPanelLayout.vue'
 import ToolRail from '../components/sidebar/ToolRail.vue'
 import WeatherPanel from '../components/sidebar/WeatherPanel.vue'
 import { connectWebSocket, disconnectWebSocket } from '../api/websocket'
-import { useFlightStore } from '../stores/flightStore'
 
-const flightStore = useFlightStore()
+const flightMapRef = ref(null)
 
 onMounted(() => {
   connectWebSocket()
@@ -101,12 +117,4 @@ const panelComponents = {
 
 const currentPanelConfig = computed(() => panelConfig[activeTool.value])
 const currentPanelComponent = computed(() => panelComponents[activeTool.value])
-const filteredFlights = computed(() => {
-  const keyword = query.value.trim().toLowerCase()
-  const all = Object.values(flightStore.flights)
-  if (!keyword) return all
-  return all.filter((flight) =>
-    `${flight.callsign ?? ''} ${flight.originCountry ?? ''}`.toLowerCase().includes(keyword)
-  )
-})
 </script>

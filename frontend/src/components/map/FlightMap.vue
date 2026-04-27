@@ -10,20 +10,40 @@ import { useFlightStore } from '../../stores/flightStore'
 import { useUiStore } from '../../stores/uiStore'
 import { updateMarkers, refreshMarkerIcon, clearAllMarkers } from './FlightMarker'
 
+const DEFAULT_CENTER = [35.0, 105.0]
+const DEFAULT_ZOOM = 5
+
 const mapContainer = ref(null)
 let map = null
 
-// icao24 -> { trail: L.polyline, trailPoints: [] }
 const trailLayers = {}
 
 const flightStore = useFlightStore()
 const uiStore = useUiStore()
 
+function zoomIn() {
+  if (map) map.zoomIn()
+}
+
+function zoomOut() {
+  if (map) map.zoomOut()
+}
+
+function resetView() {
+  if (map) map.fitBounds([[18, 73], [54, 135]], { padding: [20, 20] })
+}
+
+function locateDefaultView() {
+  if (map) map.setView(DEFAULT_CENTER, DEFAULT_ZOOM, { animate: true })
+}
+
+defineExpose({ zoomIn, zoomOut, resetView, locateDefaultView })
+
 onMounted(() => {
   map = L.map(mapContainer.value, {
-    center: [35.0, 105.0],
-    zoom: 5,
-    zoomControl: true,
+    center: DEFAULT_CENTER,
+    zoom: DEFAULT_ZOOM,
+    zoomControl: false,
     attributionControl: true,
   })
 
@@ -43,10 +63,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearAllMarkers(map)
-  if (map) { map.remove(); map = null }
+  if (map) {
+    map.remove()
+    map = null
+  }
 })
-
-// ─── 轨迹 helpers ───────────────────────────────────────────────────────────
 
 function syncTrail(flight) {
   if (!map) return
@@ -76,19 +97,15 @@ function removeTrail(icao24) {
   delete trailLayers[icao24]
 }
 
-// ─── reactive watchers ──────────────────────────────────────────────────────
-
 watch(
   () => flightStore.flights,
   (flights) => {
     const flightList = Object.values(flights)
 
-    // 统一更新 marker（包含旋转动画）
     updateMarkers(map, flightList, (flight) => {
       uiStore.openSidebar(flight.icao24)
     })
 
-    // 更新轨迹 + 清理消失航班
     const currentKeys = new Set(Object.keys(flights))
     for (const key of Object.keys(trailLayers)) {
       if (!currentKeys.has(key)) removeTrail(key)
@@ -119,7 +136,10 @@ watch(
   (open) => {
     if (open) return
     for (const layer of Object.values(trailLayers)) {
-      if (layer.trail) { map.removeLayer(layer.trail); layer.trail = null }
+      if (layer.trail) {
+        map.removeLayer(layer.trail)
+        layer.trail = null
+      }
       layer.trailPoints = []
     }
   }
