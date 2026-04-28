@@ -44,16 +44,25 @@ onMounted(() => {
     center: DEFAULT_CENTER,
     zoom: DEFAULT_ZOOM,
     zoomControl: false,
-    attributionControl: true,
+    attributionControl: false,
   })
 
   L.tileLayer(
-    'https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png',
+    `https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}`,
     {
-      attribution:
-        '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Data: OpenSky Network',
-      subdomains: 'abcd',
-      maxZoom: 14,
+      attribution: '&copy; <a href="https://lbs.amap.com/">高德地图</a>',
+      subdomains: '1234',
+      maxZoom: 18,
+      minZoom: 3,
+    }
+  ).addTo(map)
+
+  L.tileLayer(
+    `https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}`,
+    {
+      attribution: '',
+      subdomains: '1234',
+      maxZoom: 18,
       minZoom: 3,
     }
   ).addTo(map)
