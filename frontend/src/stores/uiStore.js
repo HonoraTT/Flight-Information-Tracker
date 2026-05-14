@@ -4,6 +4,7 @@ import { ref } from 'vue'
 export const useUiStore = defineStore('ui', () => {
   const sidebarOpen = ref(false)
   const selectedIcao = ref(null)   // currently selected flight icao24
+  const selectedAirport = ref(null) // currently selected airport { code, lat, lon }
   const toasts = ref([])           // { id, message, type }
 
   function openSidebar(icao24) {
@@ -11,9 +12,15 @@ export const useUiStore = defineStore('ui', () => {
     sidebarOpen.value = true
   }
 
+  function openAirportSidebar(airport) {
+    selectedAirport.value = airport
+    sidebarOpen.value = true
+  }
+
   function closeSidebar() {
     sidebarOpen.value = false
     selectedIcao.value = null
+    selectedAirport.value = null
   }
 
   let toastId = 0
@@ -28,5 +35,5 @@ export const useUiStore = defineStore('ui', () => {
     if (idx !== -1) toasts.value.splice(idx, 1)
   }
 
-  return { sidebarOpen, selectedIcao, toasts, openSidebar, closeSidebar, addToast, removeToast }
+  return { sidebarOpen, selectedIcao, selectedAirport, toasts, openSidebar, openAirportSidebar, closeSidebar, addToast, removeToast }
 })
