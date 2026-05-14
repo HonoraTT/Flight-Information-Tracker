@@ -7,7 +7,10 @@ spring:
     username: root
     password: your_mysql_password
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=200,expireAfterWrite=20m
 opensky:
   client-id: palette-api-client
   client-secret: qLRZKv7bLUqmPaUwQpelN2lmP1ZcnjeY
@@ -24,3 +27,7 @@ opensky:
     lamax: 55.0
     lomin: 70.0
     lomax: 140.0
+weather:
+  api:
+    key: YOUR_API_KEY
+    base-url: http://api.openweathermap.org/data/2.5
