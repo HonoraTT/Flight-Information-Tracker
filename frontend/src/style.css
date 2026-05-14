@@ -824,3 +824,152 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+.flight-tooltip {
+  display: grid;
+  gap: 3px;
+  color: #17324d;
+  font-size: 12px;
+}
+
+.flight-tooltip strong {
+  font-size: 13px;
+}
+
+.search-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1090;
+  pointer-events: auto;
+}
+
+.search-modal {
+  position: absolute;
+  z-index: 1100;
+  top: 76px;
+  right: 130px;
+  width: min(360px, 42vw);
+  border-radius: 24px;
+  padding: 18px;
+}
+
+.search-modal h3 {
+  margin-bottom: 12px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 10px;
+  background: #eef6fd;
+  color: #34526e;
+  cursor: pointer;
+}
+
+.search-results {
+  display: grid;
+  gap: 8px;
+}
+
+.search-results button {
+  display: grid;
+  gap: 3px;
+  border: 0;
+  border-radius: 16px;
+  padding: 11px 12px;
+  background: rgba(247, 251, 255, 0.92);
+  color: #17324d;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-results span {
+  color: #7a8fa3;
+  font-size: 12px;
+}
+
+.review-note {
+  width: 100%;
+  min-height: 120px;
+  border: 0;
+  resize: vertical;
+}
+
+
+.low-light-map {
+  filter: brightness(0.72) contrast(1.08) saturate(0.86);
+}
+
+.a11y-mode .glass,
+.a11y-mode .card,
+.a11y-mode .panel,
+.a11y-mode .weather-hero,
+.a11y-mode .floating-tool-rail {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(23, 50, 77, 0.34);
+  box-shadow: 0 12px 32px rgba(23, 50, 77, 0.18);
+}
+
+.a11y-mode,
+.a11y-mode button,
+.a11y-mode input,
+.a11y-mode select {
+  color: #0d2438;
+}
+
+.a11y-mode .hint,
+.a11y-mode .desc,
+.a11y-mode .kicker {
+  color: #38556e;
+}
+
+
+.popular-weather-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.popular-weather-card {
+  display: grid;
+  gap: 8px;
+  padding: 13px 14px;
+  border: 1px solid rgba(122, 161, 195, 0.2);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(239,248,255,0.86));
+  box-shadow: 0 10px 26px rgba(76, 116, 150, 0.1);
+}
+
+.popular-weather-card div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.popular-weather-card strong {
+  color: #176cc0;
+  font-size: 14px;
+}
+
+.popular-weather-card span,
+.popular-weather-card p {
+  color: #7a8fa3;
+  font-size: 14px;
+}
+
+.popular-weather-card b {
+  font-size: 20px;
+  color: #17324d;
+}
+
+
+.toggle input[type=checkbox] {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+}

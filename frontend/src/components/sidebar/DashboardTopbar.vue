@@ -5,7 +5,12 @@
     <div class="topbar-actions">
       <label class="search">
         ⌕
-        <input :value="modelValue" placeholder="搜索航班 / 机场 / 航司" @input="$emit('update:modelValue', $event.target.value)" />
+        <input
+          :value="modelValue"
+          placeholder="搜索航班 / 机场"
+          @input="$emit('update:modelValue', $event.target.value)"
+          @keydown.enter="$emit('search')"
+        />
       </label>
 
       <button class="icon-btn login-btn" type="button" @click="$emit('login-click')">
@@ -25,5 +30,5 @@ defineProps({
   modelValue: { type: String, default: '' },
 })
 
-defineEmits(['update:modelValue', 'login-click', 'more-click'])
+defineEmits(['update:modelValue', 'login-click', 'more-click', 'search'])
 </script>

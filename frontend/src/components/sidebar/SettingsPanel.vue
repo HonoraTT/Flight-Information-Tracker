@@ -1,49 +1,52 @@
 <template>
   <div class="stack">
     <PanelCard title="地图与图层基础设置" tag="View">
-      <ToggleRow v-model="layers.routes" text="航路与管制区边界" subtext="显示主要航路、FIR 与管制区边界" />
-      <ToggleRow v-model="layers.airports" text="机场 IATA / ICAO 标签" subtext="在地图缩放到合适级别时显示机场标识" />
-      <ToggleRow v-model="layers.lowLight" text="低亮度地图模式" subtext="适合夜间监控与长时间值守" />
-      <ToggleRow v-model="layers.terrain" text="地形与海岸线强调" subtext="增强海陆边界与地形层识别" />
+      <ToggleRow v-model="settings.layers.airports" text="机场标签" subtext="控制地图上的机场标记显示" />
+      <ToggleRow v-model="settings.layers.lowLight" text="低亮度地图模式" subtext="切换地图区域低亮度显示" />
+      <ToggleRow v-model="settings.layers.terrain" text="地形底图" subtext="开启为地形底图，关闭为普通底图" />
     </PanelCard>
 
-    <PanelCard title="数据与刷新规则" tag="Mock API">
+    <PanelCard title="数据与刷新规则" tag="WebSocket">
       <div class="chips">
-        <button v-for="item in refreshOptions" :key="item" :class="{ picked: refreshRate === item }" @click="refreshRate = item">{{ item }}</button>
+        <button v-for="item in refreshOptions" :key="item" :class="{ picked: settings.refreshRate === item }" @click="settings.refreshRate = item">{{ item }}</button>
       </div>
-      <div class="setting-row"><span>航班标签密度</span><b>{{ labelDensity }}</b></div>
-      <input v-model="densityValue" type="range" min="1" max="3" />
-      <p class="hint">当前只模拟前端刷新策略，后续可替换为真实接口、WebSocket 或轮询。</p>
+      <p class="hint">这里控制 WebSocket 心跳/重连检测频率；后端推送频率仍由后端决定。</p>
     </PanelCard>
 
-    <PanelCard title="单位与国际化配置" tag="Locale">
+    <PanelCard title="单位配置" tag="Units">
       <div class="form two-col">
-        <label>速度单位<select v-model="units.speed"><option>km/h</option><option>kt</option><option>mph</option></select></label>
-        <label>高度单位<select v-model="units.altitude"><option>meters</option><option>feet</option></select></label>
-        <label>时间格式<select v-model="units.time"><option>Local time</option><option>UTC</option></select></label>
-        <label>语言<select v-model="units.language"><option>中文 / English</option><option>English</option></select></label>
+        <label>速度单位<select v-model="settings.units.speed"><option>m/s</option><option>km/h</option></select></label>
+        <label>高度单位<select v-model="settings.units.altitude"><option value="meters">米</option><option value="feet">英尺</option></select></label>
+        <label>时间格式<select v-model="settings.units.time"><option>Local time</option><option>UTC</option></select></label>
       </div>
     </PanelCard>
 
-    <PanelCard title="告警与辅助设置" tag="Safety">
-      <ToggleRow v-model="alerts.delay" text="延误航班高亮" subtext="在地图中突出展示延误或取消状态" />
-      <ToggleRow v-model="alerts.weather" text="气象风险提示" subtext="低能见度、强侧风、雷暴等机场运行风险" />
-      <ToggleRow v-model="alerts.a11y" text="辅助阅读模式" subtext="提高文本对比度并减少装饰元素" />
+    <PanelCard title="BGM 设置" tag="Audio">
+      <ToggleRow v-model="settings.bgm.enabled" text="自动循环播放 BGM" subtext="受浏览器限制时，会在首次点击页面后播放；开启语音播报时会自动暂停 BGM" />
+      <div class="setting-row"><span>音量</span><b>{{ Math.round(settings.bgm.volume * 100) }}%</b></div>
+      <input v-model.number="settings.bgm.volume" type="range" min="0" max="1" step="0.01" />
+    </PanelCard>
+
+    <PanelCard title="辅助设置" tag="A11y">
+      <ToggleRow v-model="settings.alerts.a11y" text="辅助阅读模式" subtext="提高整体对比度并减少背景透明感" />
+      <ToggleRow v-model="settings.alerts.voice" text="语音播报" subtext="开启后播报机场天气和航班详情；语音播报与 BGM 不能同时播放，开启后 BGM 会暂停" />
     </PanelCard>
   </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { watch } from 'vue'
 import PanelCard from '../common/PanelCard.vue'
 import ToggleRow from '../common/ToggleRow.vue'
+import { useSettingsStore } from '../../stores/settingsStore'
 
 const refreshOptions = ['5s', '15s', '30s', '60s']
-const refreshRate = ref('15s')
-const densityValue = ref(2)
-const layers = reactive({ routes: true, airports: true, lowLight: false, terrain: true })
-const units = reactive({ speed: 'km/h', altitude: 'meters', time: 'Local time', language: '中文 / English' })
-const alerts = reactive({ delay: true, weather: true, a11y: false })
-const densityLabels = { 1: '低密度', 2: '标准', 3: '高密度' }
-const labelDensity = computed(() => densityLabels[densityValue.value])
+const settings = useSettingsStore().settings
+
+watch(() => settings.alerts.voice, (enabled) => {
+  if (enabled) settings.bgm.enabled = false
+})
+watch(() => settings.bgm.enabled, (enabled) => {
+  if (enabled) settings.alerts.voice = false
+})
 </script>

@@ -3,18 +3,35 @@ import { ref } from 'vue'
 
 export const useUiStore = defineStore('ui', () => {
   const sidebarOpen = ref(false)
-  const selectedIcao = ref(null)   // currently selected flight icao24
-  const selectedAirport = ref(null) // currently selected airport { code, lat, lon }
-  const toasts = ref([])           // { id, message, type }
+  const selectedIcao = ref(null)
+  const selectedAirport = ref(null)
+  const focusMode = ref(null)
+  const toasts = ref([])
 
   function openSidebar(icao24) {
     selectedIcao.value = icao24
+    selectedAirport.value = null
     sidebarOpen.value = true
   }
 
   function openAirportSidebar(airport) {
     selectedAirport.value = airport
+    selectedIcao.value = null
     sidebarOpen.value = true
+  }
+
+  function focusFlight(icao24) {
+    focusMode.value = { type: 'flight', icao24 }
+    openSidebar(icao24)
+  }
+
+  function focusAirport(airport) {
+    focusMode.value = { type: 'airport', code: airport.code }
+    openAirportSidebar(airport)
+  }
+
+  function clearFocus() {
+    focusMode.value = null
   }
 
   function closeSidebar() {
@@ -35,5 +52,5 @@ export const useUiStore = defineStore('ui', () => {
     if (idx !== -1) toasts.value.splice(idx, 1)
   }
 
-  return { sidebarOpen, selectedIcao, selectedAirport, toasts, openSidebar, openAirportSidebar, closeSidebar, addToast, removeToast }
+  return { sidebarOpen, selectedIcao, selectedAirport, focusMode, toasts, openSidebar, openAirportSidebar, focusFlight, focusAirport, clearFocus, closeSidebar, addToast, removeToast }
 })
