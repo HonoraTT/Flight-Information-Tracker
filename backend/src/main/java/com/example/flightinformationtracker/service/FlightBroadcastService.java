@@ -18,17 +18,20 @@ public class FlightBroadcastService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final OpenSkyService openSkyService;
+    private final FlightMergeService flightMergeService;
 
     public FlightBroadcastService(SimpMessagingTemplate messagingTemplate,
-                                  OpenSkyService openSkyService) {
+                                  OpenSkyService openSkyService,
+                                  FlightMergeService flightMergeService) {
         this.messagingTemplate = messagingTemplate;
         this.openSkyService = openSkyService;
+        this.flightMergeService = flightMergeService;
     }
 
     @Scheduled(fixedDelayString = "#{@openSkyService.getPollingIntervalMillis()}")
     public void broadcastFlights() {
         try {
-            List<FlightState> flights = openSkyService.fetchCurrentFlights();
+            List<FlightState> flights = flightMergeService.fetchMergedFlights();
             messagingTemplate.convertAndSend("/topic/flights", flights);
             log.info("广播 {} 架飞机数据", flights.size());
         } catch (Exception e) {

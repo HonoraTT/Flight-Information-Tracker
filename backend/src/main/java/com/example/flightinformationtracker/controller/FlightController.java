@@ -1,7 +1,7 @@
 package com.example.flightinformationtracker.controller;
 
 import com.example.flightinformationtracker.dto.FlightState;
-import com.example.flightinformationtracker.service.OpenSkyService;
+import com.example.flightinformationtracker.service.FlightMergeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FlightController {
     @Autowired
-    private OpenSkyService openSkyService;
+    private FlightMergeService flightMergeService;
     /**
      * 查询实时航班列表，支持多条件筛选
      * @param callsign  航班号（可选）
@@ -33,7 +33,7 @@ public class FlightController {
             @RequestParam(value = "icao24", required = false) String icao24,
             @RequestParam(value = "country", required = false) String country) {
 
-        List<FlightState> flights = openSkyService.getCachedFlights();
+        List<FlightState> flights = flightMergeService.getCachedMergedFlights();
 
         if (StringUtils.hasText(callsign)) {
             String c = callsign.trim().toLowerCase();

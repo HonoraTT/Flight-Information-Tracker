@@ -27,6 +27,11 @@ opensky:
     lamax: 55.0
     lomin: 70.0
     lomax: 140.0
+mock:
+  china-flights:
+    enabled: true
+    count: 500
+
 weather:
   api:
     key: YOUR_API_KEY
