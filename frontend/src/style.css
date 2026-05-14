@@ -973,3 +973,12 @@ select {
   height: 17px;
   min-width: 17px;
 }
+
+
+.a11y-mode .weather-hero,
+.a11y-mode .weather-hero span,
+.a11y-mode .weather-hero h3,
+.a11y-mode .weather-hero p,
+.a11y-mode .weather-hero strong {
+  color: #0d0d0d;
+}
