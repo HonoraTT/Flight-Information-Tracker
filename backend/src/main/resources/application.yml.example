@@ -12,8 +12,8 @@ spring:
     caffeine:
       spec: maximumSize=200,expireAfterWrite=20m
 opensky:
-  client-id: palette-api-client
-  client-secret: qLRZKv7bLUqmPaUwQpelN2lmP1ZcnjeY
+  client-id: your_client_id
+  client-secret: your_client_secret
   auth-url: https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token
   api-url: https://opensky-network.org/api
   filter-on-ground: true

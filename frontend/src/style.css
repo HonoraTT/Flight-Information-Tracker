@@ -38,6 +38,25 @@ select {
   overflow: hidden;
 }
 
+.map-overlay-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.map-overlay-layer > * {
+  pointer-events: auto;
+}
+
+.flight-map {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+}
+
+
 .map-canvas {
   position: relative;
   height: 100vh;
