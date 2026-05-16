@@ -41,7 +41,7 @@
       <SidebarPanelLayout :config="currentPanelConfig"><component :is="currentPanelComponent" /></SidebarPanelLayout>
     </aside>
 
-    <FlightDetailSidebar />
+    <FlightDetailSidebar :flight-map-ref="flightMapRef" />
   </main>
 </template>
 

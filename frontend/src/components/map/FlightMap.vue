@@ -172,7 +172,7 @@ function locateDefaultView() {
   setWeatherPulse(null)
   if (map) map.setView(DEFAULT_CENTER, DEFAULT_ZOOM, { animate: true })
 }
-defineExpose({ zoomIn, zoomOut, resetView, locateDefaultView, focusAirportOnMap, focusFlightOnMap })
+defineExpose({ zoomIn, zoomOut, resetView, locateDefaultView, focusAirportOnMap, focusFlightOnMap, getMap: () => map })
 
 onMounted(() => {
   map = L.map(mapContainer.value, { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, zoomControl: false, attributionControl: false })
