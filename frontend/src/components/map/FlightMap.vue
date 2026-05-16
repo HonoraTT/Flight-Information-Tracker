@@ -26,6 +26,7 @@ let map = null
 let airportMarkers = new Map()
 let selectedAirportCode = null
 let baseTileLayer = null
+let labelTileLayer = null
 let weatherPulseLayer = null
 const trailLayers = {}
 
@@ -64,9 +65,18 @@ const visibleFlights = computed(() => {
 function updateBaseLayer() {
   if (!map) return
   if (baseTileLayer) map.removeLayer(baseTileLayer)
-  const terrainUrl = 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+  const esriUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+  const esriLabelUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
   const normalUrl = 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
-  baseTileLayer = L.tileLayer(settingsStore.settings.layers.terrain ? terrainUrl : normalUrl, { subdomains: '1234', maxZoom: 18, minZoom: 3 }).addTo(map)
+  if (labelTileLayer) map.removeLayer(labelTileLayer)
+  labelTileLayer = null
+  if (baseTileLayer) map.removeLayer(baseTileLayer)
+  if (settingsStore.settings.layers.terrain) {
+    baseTileLayer = L.tileLayer(esriUrl, { subdomains: '1234', maxZoom: 18, minZoom: 3 }).addTo(map)
+    labelTileLayer = L.tileLayer(esriLabelUrl, { subdomains: '1234', maxZoom: 18, minZoom: 3 }).addTo(map)
+  } else {
+    baseTileLayer = L.tileLayer(normalUrl, { subdomains: '1234', maxZoom: 18, minZoom: 3 }).addTo(map)
+  }
   refreshAirportIcons()
 }
 
@@ -206,6 +216,8 @@ onUnmounted(() => {
   if (map) {
     airportMarkers.forEach((m) => map.removeLayer(m))
     airportMarkers.clear()
+    if (baseTileLayer) map.removeLayer(baseTileLayer)
+    if (labelTileLayer) map.removeLayer(labelTileLayer)
     if (weatherPulseLayer) map.removeLayer(weatherPulseLayer)
     map.remove()
     map = null
