@@ -21,16 +21,12 @@
       <div class="filter-summary"><span>速度</span><b>{{ filters.minSpeed }} - {{ filters.maxSpeed }} km/h</b></div>
     </PanelCard>
 
-    <PanelCard title="机场周边" tag="Geo">
-      <ToggleRow v-model="filters.airportNearby" text="按选中机场周边过滤" subtext="选择地图机场后，显示机场附近航班" />
-    </PanelCard>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import PanelCard from '../common/PanelCard.vue'
-import ToggleRow from '../common/ToggleRow.vue'
 import { useFilterStore } from '../../stores/filterStore'
 import { useFlightStore } from '../../stores/flightStore'
 

@@ -26,3 +26,15 @@ export function translateWeather(text) {
   const translated = WEATHER_CN[key] || String(text).trim()
   return WEATHER_ALIASES[translated] || translated
 }
+
+export function weatherEmoji(description = '') {
+  const text = String(description)
+  if (text.includes('雷')) return '⛈️'
+  if (text.includes('雨')) return '🌧️'
+  if (text.includes('雪')) return '❄️'
+  if (text.includes('雾') || text.includes('霾')) return '🌫️'
+  if (text.includes('阴')) return '☁️'
+  if (text.includes('云')) return '⛅'
+  if (text.includes('晴')) return '☀️'
+  return '🌤️'
+}

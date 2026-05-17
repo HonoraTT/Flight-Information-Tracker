@@ -56,6 +56,18 @@ export const useFlightStore = defineStore('flight', () => {
     lastUpdatedAt.value = now
   }
 
+  function replaceFlightList(flightList) {
+    const next = {}
+    for (const flight of flightList) {
+      if (!flight?.icao24) continue
+      const normalized = normalizeFlight(flight)
+      next[normalized.icao24] = normalized
+      pushTrackPoint(normalized)
+    }
+    flights.value = next
+    lastUpdatedAt.value = Date.now()
+  }
+
   function getCachedTrack(icao24) {
     return trackCache.value[icao24] || []
   }
@@ -63,5 +75,5 @@ export const useFlightStore = defineStore('flight', () => {
   function removeFlight(icao24) { delete flights.value[icao24] }
   function clearFlights() { flights.value = {} }
 
-  return { flights, trackCache, loading, error, lastUpdatedAt, updateFlight, updateFlightList, getCachedTrack, removeFlight, clearFlights }
+  return { flights, trackCache, loading, error, lastUpdatedAt, updateFlight, updateFlightList, replaceFlightList, getCachedTrack, removeFlight, clearFlights }
 })

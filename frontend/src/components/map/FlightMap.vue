@@ -13,9 +13,9 @@ import { useUiStore } from '../../stores/uiStore'
 import { updateMarkers, refreshMarkerIcon, clearAllMarkers } from './FlightMarker'
 import { createAirportIcon } from './AirportMarker'
 import { AIRPORTS } from '../../data/airports'
-import { fetchWeatherByCoordinates } from '../../api/flightApi'
+import { fetchFlights, fetchWeatherByCoordinates } from '../../api/flightApi'
 import { speakChinese } from '../../utils/speech'
-import { translateWeather } from '../../utils/weather'
+import { translateWeather, weatherEmoji } from '../../utils/weather'
 
 const DEFAULT_CENTER = [35.0, 105.0]
 const DEFAULT_ZOOM = 5
@@ -28,6 +28,8 @@ let selectedAirportCode = null
 let baseTileLayer = null
 let labelTileLayer = null
 let weatherPulseLayer = null
+let viewportFetchTimer = null
+let viewportRefreshTimer = null
 const trailLayers = {}
 
 const flightStore = useFlightStore()
@@ -53,14 +55,31 @@ const visibleFlights = computed(() => {
     if (filters.country !== '全部国家') list = list.filter(f => f.originCountry === filters.country)
     list = list.filter(f => (f.baroAltitude ?? 0) >= filters.minAltitude && (f.baroAltitude ?? 0) <= filters.maxAltitude)
     list = list.filter(f => ((f.velocity ?? 0) * 3.6) >= filters.minSpeed && ((f.velocity ?? 0) * 3.6) <= filters.maxSpeed)
-    if (filters.airportNearby && uiStore.selectedAirport) {
-      const airport = uiStore.selectedAirport
-      list = list.filter(f => Math.abs((f.latitude ?? 0) - airport.lat) <= AIRPORT_RADIUS_DEG && Math.abs((f.longitude ?? 0) - airport.lon) <= AIRPORT_RADIUS_DEG)
-    }
   }
 
   return list.length > 1000 && map ? list.filter(f => map.getBounds().contains([f.latitude, f.longitude])) : list
 })
+
+function scheduleViewportFetch(delay = 250) {
+  clearTimeout(viewportFetchTimer)
+  viewportFetchTimer = setTimeout(loadFlightsInViewport, delay)
+}
+
+async function loadFlightsInViewport() {
+  if (!map) return
+  const b = map.getBounds()
+  try {
+    const flights = await fetchFlights({
+      lamin: b.getSouth(),
+      lamax: b.getNorth(),
+      lomin: b.getWest(),
+      lomax: b.getEast(),
+    })
+    flightStore.replaceFlightList(Array.isArray(flights) ? flights : [])
+  } catch {
+    uiStore.addToast('当前视野航班数据加载失败', 'error')
+  }
+}
 
 function updateBaseLayer() {
   if (!map) return
@@ -101,13 +120,13 @@ function syncLowLight() {
 
 function getWeatherVisual(desc) {
   const text = desc || '实时天气'
-  if (text.includes('雨')) return { icon: '雨', className: 'rainy', label: text }
-  if (text.includes('雪')) return { icon: '雪', className: 'snowy', label: text }
-  if (text.includes('雷')) return { icon: '雷', className: 'stormy', label: text }
-  if (text.includes('雾') || text.includes('霾')) return { icon: '雾', className: 'foggy', label: text }
-  if (text.includes('云') || text.includes('阴')) return { icon: '云', className: 'cloudy', label: text }
-  if (text.includes('晴')) return { icon: '晴', className: 'sunny', label: text }
-  return { icon: '天', className: 'live', label: text }
+  if (text.includes('雨')) return { icon: weatherEmoji(text), className: 'rainy', label: text }
+  if (text.includes('雪')) return { icon: weatherEmoji(text), className: 'snowy', label: text }
+  if (text.includes('雷')) return { icon: weatherEmoji(text), className: 'stormy', label: text }
+  if (text.includes('雾') || text.includes('霾')) return { icon: weatherEmoji(text), className: 'foggy', label: text }
+  if (text.includes('云') || text.includes('阴')) return { icon: weatherEmoji(text), className: 'cloudy', label: text }
+  if (text.includes('晴')) return { icon: weatherEmoji(text), className: 'sunny', label: text }
+  return { icon: weatherEmoji(text), className: 'live', label: text }
 }
 
 async function setWeatherPulse(airport) {
@@ -127,13 +146,14 @@ async function setWeatherPulse(airport) {
   } catch {
     visual = getWeatherVisual('天气加载中')
   }
+  const terrainClass = settingsStore.settings.layers.terrain ? 'terrain' : 'normal'
   weatherPulseLayer = L.marker([airport.lat, airport.lon], {
     interactive: false,
     icon: L.divIcon({
       className: '',
-      iconSize: [240, 240],
-      iconAnchor: [120, 120],
-      html: `<div class="weather-zone ${visual.className}"><span class="ring r1"></span><span class="ring r2"></span><span class="weather-badge"><b>${visual.icon}</b><em>${visual.label}</em></span><i class="particle p1"></i><i class="particle p2"></i><i class="particle p3"></i></div>`,
+      iconSize: [260, 270],
+      iconAnchor: [130, 148],
+      html: `<div class="weather-zone ${visual.className} ${terrainClass}"><span class="airport-name">${airport.name}</span><span class="ring r1"></span><span class="ring r2"></span><span class="weather-badge"><b>${visual.icon}</b><em>${visual.label}</em></span><i class="particle p1"></i><i class="particle p2"></i><i class="particle p3"></i></div>`,
     }),
   }).addTo(map)
 }
@@ -197,6 +217,10 @@ onMounted(() => {
   syncAirportVisibility()
   syncLowLight()
 
+  map.on('moveend zoomend', () => scheduleViewportFetch())
+  scheduleViewportFetch(0)
+  viewportRefreshTimer = setInterval(() => scheduleViewportFetch(0), settingsStore.refreshMs)
+
   map.on('click', (e) => {
     const target = e.originalEvent?.target
     const clickedOnMarker = target?.closest('.leaflet-marker-icon')
@@ -212,6 +236,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  clearTimeout(viewportFetchTimer)
+  clearInterval(viewportRefreshTimer)
   clearAllMarkers(map)
   if (map) {
     airportMarkers.forEach((m) => map.removeLayer(m))
@@ -272,11 +298,14 @@ watch(() => uiStore.sidebarOpen, (open) => { if (!open && uiStore.focusMode?.typ
 <style scoped>
 .flight-map { width: 100%; height: 100vh; }
 :deep(.plane-icon-wrap) { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-:deep(.weather-zone) { position: relative; width: 240px; height: 240px; pointer-events: none; }
+:deep(.weather-zone) { position: relative; width: 260px; height: 270px; pointer-events: none; }
+:deep(.weather-zone .airport-name) { position: absolute; left: 50%; top: 50px; z-index: 3; max-width: 220px; padding: 5px 10px; border-radius: 999px; transform: translateX(-50%); font-size: 18px; font-weight: 900; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:deep(.weather-zone.terrain .airport-name) { background: rgba(18, 56, 34, 0.6); color: #f2faff; }
+:deep(.weather-zone.normal .airport-name) { background: rgba(255,255,255,0.92); color: #0b3f66; border: 1px solid #fff; box-shadow: 0 8px 20px rgba(11,63,102,0.18); }
 :deep(.weather-zone .ring) { position: absolute; inset: 22px; border-radius: 50%; border: 2px solid rgba(79, 180, 255, 0.62); background: radial-gradient(circle, rgba(79, 180, 255, 0.22), rgba(79, 180, 255, 0.04) 58%, transparent 72%); animation: weatherZonePulse 2.6s ease-out infinite; }
 :deep(.weather-zone .r2) { animation-delay: 1.15s; }
 :deep(.weather-badge) { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; gap: 4px; min-width: 104px; padding: 10px 14px; border-radius: 999px; transform: translate(-50%, -50%); color: #fff; background: linear-gradient(135deg, rgba(23,108,192,0.92), rgba(79,180,255,0.88)); box-shadow: 0 12px 28px rgba(23, 108, 192, 0.32); font-style: normal; text-align: center; }
-:deep(.weather-badge b) { font-size: 18px; line-height: 1; }
+:deep(.weather-badge b) { font-size: 24px; line-height: 1; }
 :deep(.weather-badge em) { font-size: 12px; font-style: normal; white-space: nowrap; }
 :deep(.weather-zone .particle) { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: rgba(79,180,255,0.82); animation: weatherParticle 1.8s ease-in-out infinite; }
 :deep(.weather-zone .p1) { left: 54px; top: 86px; }

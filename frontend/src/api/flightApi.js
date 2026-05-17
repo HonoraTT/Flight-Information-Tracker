@@ -10,7 +10,7 @@ api.interceptors.response.use(
   }
 )
 
-export function fetchFlights() { return api.get('/flights') }
+export function fetchFlights(params = {}) { return api.get('/flights', { params }) }
 export function fetchFlightByIcao(icao24) { return api.get(`/flights/${icao24}`) }
 export function fetchTracks(icao24, seconds = 86400) { return api.get(`/tracks/${icao24}`, { params: { seconds } }) }
 export function fetchWeatherByCoordinates(lat, lon) { return api.get('/weather/coordinates', { params: { lat, lon } }) }

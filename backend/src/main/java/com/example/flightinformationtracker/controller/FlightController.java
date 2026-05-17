@@ -31,7 +31,11 @@ public class FlightController {
     public ResponseEntity<List<FlightState>> getFlights(
             @RequestParam(value = "callsign", required = false) String callsign,
             @RequestParam(value = "icao24", required = false) String icao24,
-            @RequestParam(value = "country", required = false) String country) {
+            @RequestParam(value = "country", required = false) String country,
+            @RequestParam(value = "lamin", required = false) Double lamin,
+            @RequestParam(value = "lamax", required = false) Double lamax,
+            @RequestParam(value = "lomin", required = false) Double lomin,
+            @RequestParam(value = "lomax", required = false) Double lomax) {
 
         List<FlightState> flights = flightMergeService.getCachedMergedFlights();
 
@@ -53,6 +57,14 @@ public class FlightController {
             String ct = country.trim().toLowerCase();
             flights = flights.stream()
                     .filter(f -> f.getOriginCountry() != null && f.getOriginCountry().toLowerCase().contains(ct))
+                    .collect(Collectors.toList());
+        }
+
+        if (lamin != null && lamax != null && lomin != null && lomax != null) {
+            flights = flights.stream()
+                    .filter(f -> f.getLatitude() != null && f.getLongitude() != null)
+                    .filter(f -> f.getLatitude() >= lamin && f.getLatitude() <= lamax
+                            && f.getLongitude() >= lomin && f.getLongitude() <= lomax)
                     .collect(Collectors.toList());
         }
 

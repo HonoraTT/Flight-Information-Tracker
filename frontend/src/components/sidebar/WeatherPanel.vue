@@ -6,7 +6,7 @@
         <h3>{{ normalized.temperature }}°C · {{ normalized.description }}</h3>
         <p>体感 {{ normalized.feelsLike }}°C · 湿度 {{ normalized.humidity }}% · 云量 {{ normalized.clouds }}%</p>
       </div>
-      <strong>{{ weatherStatus }}</strong>
+      <strong class="weather-emoji">{{ weatherEmoji(normalized.description) }}</strong>
     </div>
 
     <div class="weather-grid compact-weather-grid">
@@ -34,7 +34,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { fetchWeatherByCoordinates } from '../../api/flightApi'
 import { AIRPORTS } from '../../data/airports'
 import { useUiStore } from '../../stores/uiStore'
-import { translateWeather } from '../../utils/weather'
+import { translateWeather, weatherEmoji } from '../../utils/weather'
 import PanelCard from '../common/PanelCard.vue'
 
 const uiStore = useUiStore()

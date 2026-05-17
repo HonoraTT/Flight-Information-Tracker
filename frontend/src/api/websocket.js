@@ -1,6 +1,5 @@
 import SockJS from 'sockjs-client'
 import { Stomp } from '@stomp/stompjs'
-import { useFlightStore } from '../stores/flightStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useUiStore } from '../stores/uiStore'
 
@@ -33,14 +32,6 @@ export function connectWebSocket() {
 
   stompClient.connect({}, () => {
     startHeartbeat()
-    stompClient.subscribe('/topic/flights', (message) => {
-      const flightList = JSON.parse(message.body)
-      useFlightStore().updateFlightList(Array.isArray(flightList) ? flightList : [])
-    })
-    stompClient.subscribe('/topic/flights/removed', (message) => {
-      const { icao24 } = JSON.parse(message.body)
-      useFlightStore().removeFlight(icao24)
-    })
   }, () => {
     useUiStore().addToast('实时航班连接异常，正在尝试重连', 'error')
     scheduleReconnect()
